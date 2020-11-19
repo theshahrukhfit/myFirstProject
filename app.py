@@ -243,17 +243,6 @@ def mycart():
                     rowcpy.update({'size': skey[1], 'sizeid': val['sizeid'], 'Quantity': val['quantity']})
                     dbcounted.append(rowcpy)
 
-
-        # dbcounted = []
-        # for key, value in counter.items():
-        #     cKey = int(list(ast.literal_eval(key).keys())[0])
-        #     for row in getdata:
-        #         if row['id'] == cKey:
-        #             import copy
-        #             rowcpy = copy.copy(row)
-        #             rowcpy.update({ 'size': list(ast.literal_eval(key).values())[0], 'Quantity': value })
-        #             dbcounted.append(rowcpy)
-
         return render_template("mycart.html", dbcounted = dbcounted)
     
     return render_template("mycart.html")
@@ -389,10 +378,6 @@ def uploadimg():
         
     return apology("Access Denied")
 
-# @app.route('/uploads/<filename>')
-# def upload(filename):
-#     return send_from_directory(app.config['UPLOAD_PATH'], filename)
-
 @app.route('/viewproducts')
 def viewpro():
     products = displayAllProducts()
@@ -405,29 +390,6 @@ def delpro(proid):
         deleteProduct(proid)
     
     return redirect(url_for('viewpro'))
-    # return apology("Access Denied")
-
-# @app.route("/processproduct", methods=['GET', 'POST'])
-# def prsprd():
-#     if request.method == "POST":
-#         if not request.form.get("pname"):
-#             flash("Provide Product's Name")
-
-#         elif not request.form.get("pprice"):
-#             flash("Provide Product's Price"):
-
-#         elif not request.form.get("pstock"):
-#             flash("Provide Product's Stock")
-
-#         elif not request.form.get("pcolor"):
-#             flash("Select a color")
-
-#         elif not request.form.get("pcate"):
-#             flash("Select Provide's Category")
-
-#         elif not request.form.get("fimg") and not request.form.get("bimg"):
-#             flash("Select Product's Image")
-
 
 def errorhandler(e):
     """Handle error"""

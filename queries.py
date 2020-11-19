@@ -94,8 +94,7 @@ def searchAttributes(immuDict):
     
     
 def check_out(userid, firstName, midName, lastName, email, mobile, address, address2, city, state, zipcode):
-    # db.execute("INSERT INTO cart (id, firstName, middleName, lastName, mobile ,email, line1, line2, city, province, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", userid, firstName,
-    # midName, lastName, mobile, email, address, address2, city, state, zipcode)
+
     import sqlite3
     connection = sqlite3.connect('database.db')
     cursor = connection.cursor()

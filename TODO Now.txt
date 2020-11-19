@@ -1,7 +1,0 @@
-2a. Create a Template to display products info, to which user is redirected to when he clicks on the product he is interested in buy.
-2b. Add Size Options to Select for the Product, and Add to Cart function inside the template.
-2c. Showcase product's images.
-
-
-DONE:
-3, DONE. Add More than One Image for the product. And when user mouse over the product's main image, it shows the rest of the product's images.
