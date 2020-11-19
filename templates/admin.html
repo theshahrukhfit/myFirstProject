@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Admin Page
+{% endblock %}
+
+{% block main %}
+<h3 class="head_line">Manage Products</h3>
+{% if get_flashed_messages() %}
+<div class="alert alert-danger" role="alert" style="width: 800px; text-align: left;">
+    {{ get_flashed_messages() | join(" ") }}
+  </div>
+{% endif %}
+<div id='adminportal' style="margin: 50px; display: flex; flex-direction: column;">
+  <form method="POST" action="/admin" enctype="multipart/form-data">
+    <div class="form-row">
+      <div style="width: 100%;"><p style="text-align: left; font-size: 16px; font-weight: 600; text-decoration: underline;">Upload Product's Images</p></div>
+      <div class="form-group col-md-1">
+          <label for="cates" for="imgs">Upload Images:</label>
+        <label for="file-upload" class="custom-file-upload button">
+          Choose Images
+      </label>
+      <input id="file-upload" type="file" name="imgfiles" id="imgs" multiple accept="image/*"/>
+      </div>
+      <div style="margin-left: 160px;">
+        <button type="submit" class="button" style="margin-right: 60px;" id="upbut">Upload Image(s)</button>  
+        </div>
+      </div>
+      
+    </form> 
+  <hr>
+      <div id="imgsec" style="text-align: left;">
+        <h4 id="fbhead" style="text-align: left; font-size: 16px; font-weight: 600; text-decoration: underline;">Select Product's Front-Image</h4>
+        {% for file in files %}
+        <img src="{{ file }}" style="width: 128px; padding: 1px; margin: 1px;">
+        {% endfor %}
+      </div>
+      <div>
+        <hr>
+    <form method="POST" action="/admin" id="pdet">
+      <div><p style="text-align: left; font-size: 16px; font-weight: 600; text-decoration: underline;">Fill in the Product Details</p></div>
+        <div class="form-row">
+            <div class="form-group col-md-2">
+              <label for="pname">Product Name</label>
+              <input type="text" class="form-control" id="pname" name="pname" placeholder="Product Name">
+            </div>
+            <div class="form-group col-md-1">
+                <label for="pprice">Price</label>
+                <input type="number" class="form-control" id="pprice" name="pprice" placeholder="Price">
+              </div>
+              <div class="form-group col-md-1">
+                <label for="pstock">Stock</label>
+                <input autocomplete="off" class="form-control" min="1" id="pstock" name="pstock" placeholder="Stock" type="number">
+              </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-1">
+                <label for="pcolors">Color:</label>
+                <select id="pcolors" name="pcolor">
+                {% for color in colors %}
+                <option value="{{ color['id'] }}">{{ color['color'] }}</option>
+                {% endfor %}
+                </select>
+              </div>
+              <div class="form-group col-md-2">
+                <label for="cates">Category:</label>
+                <select id="cates" name="pcate">
+                {% for cate in categories %}
+                <option value="{{ cate['id'] }}">{{ cate['catname'] }}</option>
+                {% endfor %}
+                </select>
+              </div>
+              
+        </div>
+          <input type="hidden" name="fimg" id="fimg" value=""/>
+          <input type="hidden" name="bimg" id="bimg" value=""/>
+          <button type="submit" class="button" style="margin-right: 700px;">Process Product</button> 
+        </form>
+        </div>
+</div>
+<div class='centerpv'>
+  <a href="{{ url_for('viewpro') }}" style="font-size: 18px">View ALL Products</a>
+</div>
+{% endblock %}

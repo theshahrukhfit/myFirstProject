@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}
+    Success
+{% endblock %}
+{% block main %}
+<h3 class="head_line" style="color: green;">Successful</h3>
+<div class="alert alert-success" role="alert">
+    {{ msg }}
+  </div>
+
+  <div>
+      <a href="{{ url_for('index') }}"><button class="button">OK</button></a>
+  </div>
+{% endblock %}
+{% block script %}
+    <script>
+        thetimer()
+
+        function thetimer() {
+            
+        window.setTimeout(function(){
+
+        // Move to a new location or you can do something else
+        window.location.href = '{{ url_for('index') }}';
+  
+        }, 4500);
+    }
+    </script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+{% block main %}
+<div id="caroTop" class="mainpd">
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img class="d-block w-100" src="static/images/carousel/mainpd.jpg" alt="First slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="static/images/carousel/mainpd2.jpg" alt="Second slide">
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="static/images/carousel/mainpd3.jpg" alt="Third slide">
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+{% block searcher %}
+<form class="searcher" action="/search" method="POST">
+    <br />
+    <div id="searchIcon">
+        <svg id="srchIcon" type='submit' width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+            <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+       </svg>
+    </div>
+    <div class="searchItems">
+        <h5>Color:</h5>
+        {% for color in colors %}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="p.color" value="{{ color['id'] }}" style="width: 20px;" >
+            <label class="form-check-label">{{ color['color'] }}</label>
+        </div>
+        {% endfor %}
+    </div>
+    <br>
+    <div class="searchItems">
+        <h5>Category:</h5>
+        {% for cate in dcatelist %}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="p.cateid" value="{{ cate['id'] }}" style="width: 20px;" >
+            <label class="form-check-label">{{ cate['catname'] }}</label>
+        </div>
+        {% endfor %}
+    </div>
+    <br>
+    <div class="searchItems">
+        <h5>Prices Rs.:</h5>
+        {% for key, value in priceap.items() %}
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="p.id" value="{{ value }}" style="width: 20px;">
+            <label class="form-check-label">{{ key }}</label>
+        </div>
+        {% endfor %}
+    </div>
+    <br>
+    <div>
+        <button type="submit" class="btn btn-primary btn-rounded">Search</button>
+    </div>
+    <div class="bar"></div>
+</form>
+{% endblock %}
+<div id="imgcont" class="containerxyz">
+    <h2>Top-Picks</h2>
+    {% for img in dressimgs %}
+    <div>
+    <div class="econt reveal">
+        <a href="{{ url_for('itemdtls', proid=img['id']) }}">
+        <div hidden class="productID">{{ img['id'] }}</div>
+        <img id="tesT" src="{{ img['fimg'] }}" alt="img" height="" width=""/>
+        <img class="hidden" src="{{ img['bimg'] }}" alt="img" />
+        <div class="shoP">
+            <h4 style="font-size: 20px;">{{ img['name'] }}</h4>
+            <h4 class="hoveradd2cart" style="font-size: 20px;">+ Add to cart?</h4>
+            <br>
+            <div style="font-size: 20px;">Shop Now For Rs. {{ img['price'] | pkr }}</div>
+        </div>
+        </a>
+    </div>
+    <h4 style="float: left; margin-left: 30px;">Price: Rs. {{ img['price'] | pkr }}</h4>
+</div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/js/bootstrap.min.js" integrity="sha384-XEerZL0cuoUbHE4nZReLT7nx9gQrQreJekYhJD9WNWhH8nEW+0c5qq7aIo2Wl30J" crossorigin="anonymous"></script>
+<script>srchAct();</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    My Cart
+{% endblock %}
+{% block main %}
+<h3 class="head_line">My Cart</h3>
+    <table id="cart_table">
+        <thead>
+            <tr>
+                <th><h4>Item</h4></th>
+                <th class="tquantity"><h4>Quantity</h4></th>
+                <th><h4>Price Rs.</h4></th>
+                <th><h4>Total Rs.</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in dbcounted %}
+            <tr class="cart_row" id='{ "{{ i['id'] }}-{{ i['size'] }}": { "sizeid" : "{{ i['sizeid'] }}" }}'>
+                <td style="display: flex;">
+                    <img src="{{ i['fimg'] }}" width="120" height="160" alt="img" style="margin:5px;">
+                    <div style="margin: auto;">
+                        <div style="margin:5px; text-decoration: underline; font-weight: bold;">{{ i['name'] }}</div>
+                        <p>Size: {{ i['size'] }}</p>
+                    </div>    
+                </td>
+                <td class="tquantity">
+                    <div class="qty mt-5">
+                    <div class="cart_item_head">Select Quantity</div>
+                    <span class="minus bg-dark">-</span>
+                    <input type="number" class="count" name="qty" value="{{ i['Quantity'] }}">
+                    <span id="minuslo"><span class="plus bg-dark">+</span></span>
+                    </div>
+                    <div class="cart_del">Delete</div>
+                </td>
+                <td class="p_price">{{ i['price'] | pkr }}</td>
+                {% set total = i['Quantity'] * i['price'] %}
+                <td class="p_total">{{ total | pkr }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th style="text-align: right;"><h4 style="padding-top: 15px;" >Grand Total: Rs. <span id='grand_total' ></span></h4></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checkoutbut"><a href="/checkout"><button class="button">PROCEED TO CHECKOUT</button></a></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+   <input type="hidden" value="">
+{% endblock %}
+{% block script %}
+<script>grand_total()</script>
+{% endblock %}

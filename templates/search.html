@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Search Results:
+{% endblock %}
+
+{% block main %}
+<h2 class="head_line">Search Results</h2>
+<br>
+    <table class="searchTable">
+        <thead>
+            <tr>
+                <th><h4>Product</h4></th>
+                <th><h4>Category</h4></th>
+                <th><h4>Color</h4></th>
+                <th><h4>Price</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in query %}
+            <tr>
+                <td><img src="{{ row['fimg'] }}" width="80" height="110" alt="img" style="padding: 5px">{{ row['name'] }}</td>
+                <td>{{ row['catname'] }}</td>
+                <td>{{ row['color'] }}</td>
+                <td>{{ row['price'] }}</td>
+            </tr>
+            <tr><th><a href="{{ url_for('itemdtls', proid=row['id']) }}"><h5 class="sendID hoveradd2cart">+ Add to cart?</h5></a></th></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block inhead %}{% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=0.6">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href="/static/styles.css" rel="stylesheet">
+    <title>Nusrat Perveen's Dress Boutique: {% block title %}{% endblock %}</title>
+</head>
+<body>
+    <div class="inBodyWrapper">
+    <header>
+        <h4 class="logo">N</h4>
+        <nav class='nav1'>
+            <ul class='nav_links'>
+                <li><a href="/">Home</a></li>
+                <li class="dhid"><a href="/categories">Dresses</a>
+                    <ul class="navdrpd">
+                        {%- for cate in dcatelist -%}
+                        <li><a href="{{ url_for('category', cid=cate['id']) }}">{{ cate['catname'] }}</a></li>
+                        {%- endfor -%}
+                    </ul>
+                </li>
+                {% if session.user_id == 1 %}
+                <li><a href="/admin">Admin</a></li>
+                {% endif %}
+                {% if session.user_id %}
+                <li><a href="/logout">Logout</a></li>
+                {% else %}
+                <li><a href="/login">Login / Sign Up</a></li>
+                {% endif %}
+                <div class="contactus">
+                    <a href="/contact"><button class="button contactdisplay">Contact Us</button></a>
+                </div>
+            </ul>
+        </nav>
+        <div class="shopNcontact">
+            <a href="/mycart" style="display: block; width: 50px; position: relative; left: 95px; z-index: 1;" class="ahoverd"></a>
+            <div id="shopCounterDiv">
+            <svg id="shopCart"width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-cart3" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+            </svg>
+              <div id='shopCounter'>0</div>
+        </div>
+        <div id="contactus">
+        <a href="/contact"><button class="button">Contact Us</button></a>
+        </div>
+        </div>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </header>
+        <main>
+            {% block main %}{% endblock %}
+        </main>
+        </div>
+    </body>
+        <footer>
+            <small>&copy; Copyright 2020, N Corporation</small>
+        </footer>
+    
+    
+    <script src="/static/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="/static/main.js"></script>
+    <script>navSlide();</script>
+    {% block script %}{% endblock %}
+    
+    

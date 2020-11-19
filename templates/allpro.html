@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+
+<h2 class="head_line">All Products</h2>
+<br>
+    <table class="searchTable">
+        <thead>
+            <tr>
+                <th><h4>Product</h4></th>
+                <th><h4>Price</h4></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in products %}
+            <tr>
+                <td><img src="{{ row['fimg'] }}" width="80" height="110" alt="img" style="padding: 5px">{{ row['name'] }}</td>
+                <td>{{ row['price'] }}</td>
+            </tr>
+            <tr><th><a href="{{ url_for('delpro', proid=row['id']) }}"><h5 class="sendID hoveradd2cart" style="color: red; float: right;">Delete</h5></a></th></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}
+    Dress View
+{% endblock %}
+{% block main %}
+            {% for i in product %}
+            <div class="dtlscont">
+                <div class="dtlslrg">
+                    <img src="{{ i['fimg'] }}" alt="mainimg">
+                </div>
+                <div class="dtlssml" >
+                    {% for img in pimgs %}
+                    <div class="dtlsimgcont">
+                    <img src="{{ img['url'] }}" alt="">
+                    </div>
+                    {% endfor %}             
+                </div>
+            </div>
+            <div class="dtls_productinfo">
+                <div style="padding: 10px;">
+                    
+                <h4 style="text-align: left;">{{ i['name'] }}</h4>
+                 <div style="border-top: 1px solid black;border-bottom: 1px solid gray ; width: 100%; text-align: left; padding: 10px;" class="product_info">
+                    <p>Color:{{ i['color'] }}</p>
+                    <h4>{{ i['price'] }}</h4>
+                    <div class="pinfo_size" style="text-align: left;">
+                        <h5>SIZE:</h5>
+                        {% for j in size %}
+                        <span name="{{ j['id'] }}" >{{ j['size'] }}</span>
+                        {% endfor %}
+                    </div>
+                    <h5 style="text-align: right;">Availability: {% if i['stock']|int > 0 %}<span style="color:forestgreen;">Instock</span>{% else %}<span style="color:red;">Out of Stock</span>{% endif %}</h5>
+                    </div>
+                    
+                    <div style="text-align: left; padding: 10px;">
+                        <button class="button sendID" name="{{ i['id'] }}pid">+Add to Cart</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        {% endblock %}
+
+
+    
+    
