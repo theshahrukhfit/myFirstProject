@@ -1,153 +1,172 @@
-from cs50 import SQL
-import logic
-import json
-import ast
+from flask_sqlalchemy import SQLAlchemy
+from logic import multiIdQ
 from flask import session
+from database import db
 
-    
-#Configuring sqlite
 
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///database.db")
+db = SQLAlchemy(app)
 
-#Getting all products
+class Product(db.Model):
+    __tablename__ = 'products'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    cateid = db.Column(db.Integer, db.ForeignKey('pcategory.id'))
+    stock = db.Column(db.Integer)
+    price = db.Column(db.Float)
+    color = db.Column(db.Integer, db.ForeignKey('color.id'))
+    fimg = db.Column(db.String)
+    bimg = db.Column(db.String)
+
+class Pcategory(db.Model):
+    __tablename__ = 'pcategory'
+    id = db.Column(db.Integer, primary_key=True)
+    catname = db.Column(db.String)
+
+class Color(db.Model):
+    __tablename__ = 'color'
+    id = db.Column(db.Integer, primary_key=True)
+    color = db.Column(db.String)
+
+class Size(db.Model):
+    __tablename__ = 'sizes'
+    id = db.Column(db.Integer, primary_key=True)
+    size = db.Column(db.String)
+
+class ProductImg(db.Model):
+    __tablename__ = 'productimg'
+    id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
+    url = db.Column(db.String)
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True)
+    hash = db.Column(db.String)
+    email = db.Column(db.String)
+
+class Cart(db.Model):
+    __tablename__ = 'cart'
+    cart_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    firstName = db.Column(db.String)
+    middleName = db.Column(db.String)
+    lastName = db.Column(db.String)
+    mobile = db.Column(db.String)
+    email = db.Column(db.String)
+    line1 = db.Column(db.String)
+    line2 = db.Column(db.String)
+    city = db.Column(db.String)
+    province = db.Column(db.String)
+    zip = db.Column(db.String)
+
+class CartProduct(db.Model):
+    __tablename__ = 'cart_products'
+    cart_product_id = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.Integer, db.ForeignKey('products.id'))
+    sizeid = db.Column(db.Integer, db.ForeignKey('sizes.id'))
+    quantity = db.Column(db.Integer)
+    price = db.Column(db.Float)
+    cart_id = db.Column(db.Integer, db.ForeignKey('cart.cart_id'))
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+    order_id = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.Integer, db.ForeignKey('users.id'))
+    cart_id = db.Column(db.Integer, db.ForeignKey('cart.cart_id'))
+    grand_total = db.Column(db.Float)
+
 def displayAllProducts():
+    return Product.query.with_entities(Product.id, Product.price, Product.fimg, Product.bimg, Product.name).all()
 
-    #Query for the most purchased products - Displaying Top Picks Dresses on index.html 
-    dressimgs = db.execute("SELECT products.id, products.price, products.fimg, products.bimg, products.name FROM products;")
-
-    return dressimgs
-
-#Getting a specific product from database
 def get_product(pid):
-    getp = db.execute("SELECT products.id, products.stock, products.price, products.fimg, colortable.color, products.name, pcategory.catname FROM color colortable JOIN products ON colortable.id = products.color JOIN pcategory ON products.cateid = pcategory.id WHERE products.id = :proid;", proid = pid)
-    return getp
+    return db.session.query(Product.id, Product.stock, Product.price, Product.fimg, Color.color, Product.name, Pcategory.catname)\
+        .join(Color, Color.id == Product.color)\
+        .join(Pcategory, Pcategory.id == Product.cateid)\
+        .filter(Product.id == pid).all()
 
-#Get the Size attribute from the DB
 def getSize():
-    size = db.execute('SELECT id, size FROM sizes;')
-    return size
+    return Size.query.all()
 
-#Get product all of products imgs
 def get_pimgs(pid):
-    getImgs = db.execute('SELECT url FROM productimg WHERE id = :pid;', pid=pid)
-    return getImgs
+    return ProductImg.query.filter_by(id=pid).all()
 
-#Price Query for search
 def priceq():
-    price = db.execute("SELECT products.price, products.id FROM products ORDER BY price;")
-    return price
-
+    return Product.query.order_by(Product.price).all()
 
 def productCategoryWise(cid):
+    return db.session.query(Product.id, Product.fimg, Product.bimg, Product.price, Product.name, Pcategory.catname, Pcategory.id.label('catid'))\
+        .join(Pcategory, Product.cateid == Pcategory.id)\
+        .order_by(db.case([(Pcategory.id == cid, 1)], else_=2), Pcategory.id).all()
 
-    cateID = cid
-
-    #Query for whichever category user clicked on
-    query = db.execute("SELECT products.id, fimg, bimg, products.price, products.name, pcategory.catname, pcategory.id AS catid FROM products JOIN pcategory ON products.cateid = pcategory.id ORDER BY CASE WHEN catid = :cateID THEN 1 ELSE 2 END, catid;", cateID = cateID)
-    return query
-
-#All Categories
 def allCategories():
-    dcatelist = db.execute("SELECT id, catname FROM pcategory;")
-    return dcatelist
-
+    return Pcategory.query.all()
 
 def getAllDictP(cart):
-    #Placing the user Selected Product ID into DB querry
-    forQ = ''
-    for i in str(cart.keys()):
-        if i.isdigit() or i == ',':
-            forQ += i
-    ex_str = 'SELECT p.id, p.name, p.cateid, p.stock, p.price, p.fimg FROM products p WHERE p.id IN (' + forQ + ') ORDER BY p.id ; '
-    dbcounted = db.execute(ex_str)
+    product_ids = [int(key.split('-')[0]) for key in cart.keys()]
+    return Product.query.filter(Product.id.in_(product_ids)).order_by(Product.id).all()
 
-    return dbcounted
-
-#Dynamic Search Option
 def colorOption():
-    colors = db.execute('SELECT * FROM color;')
-    return colors
+    return Color.query.all()
 
 def registerUser(username, password, email):
-    db.execute("INSERT INTO users (username, hash, email) VALUES (?, ?, ?)", username, password, email)
+    new_user = User(username=username, hash=password, email=email)
+    db.session.add(new_user)
+    db.session.commit()
     return "Complete"
 
 def checkLogin(username):
-    row = db.execute("SELECT * FROM users WHERE username = :username", username=username)
-    return row
+    return User.query.filter_by(username=username).all()
 
-#Search feature for searching products with their respective attributes
 def searchAttributes(immuDict):
-    ex_str = 'SELECT p.id, p.name, pc.catname, p.stock, p.price, colortable.color, p.fimg FROM products p JOIN color colortable ON colortable.id = p.color JOIN pcategory pc ON p.cateid = pc.id WHERE '
-    for i, (key, val) in enumerate(immuDict.items()):
-        if key == 'p.id' or key == 'p.cateid' or key == 'p.color':
-            if i == 0:
-                qstr = str(key) + ' IN (' + logic.multiIdQ(val) + ')'
-                ex_str = ex_str + qstr
+    query = db.session.query(Product.id, Product.name, Pcategory.catname, Product.stock, Product.price, Color.color, Product.fimg)\
+        .join(Color, Color.id == Product.color)\
+        .join(Pcategory, Pcategory.id == Product.cateid)
+    for key, val in immuDict.items():
+        if key == 'p.id':
+            query = query.filter(Product.id.in_([int(v) for v in val]))
+        elif key == 'p.cateid':
+            query = query.filter(Product.cateid.in_([int(v) for v in val]))
+        elif key == 'p.color':
+            query = query.filter(Product.color.in_([int(v) for v in val]))
+    return query.all()
 
-            else:
-                qstr = ' AND ' + str(key) + ' IN (' + logic.multiIdQ(val) + ')'
-                ex_str = ex_str + qstr
-
-    return db.execute(ex_str)
-    
-    
 def check_out(userid, firstName, midName, lastName, email, mobile, address, address2, city, state, zipcode):
-
-    import sqlite3
-    connection = sqlite3.connect('database.db')
-    cursor = connection.cursor()
-
-    sql = 'INSERT INTO cart (id, firstName, middleName, lastName, mobile ,email, line1, line2, city, province, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    cursor.execute(sql, (userid, firstName,
-    midName, lastName, mobile, email, address, address2, city, state, zipcode))
-
-    lastrid = cursor.lastrowid
-
-    #Adding Cart Items into Database
+    new_cart = Cart(id=userid, firstName=firstName, middleName=midName, lastName=lastName, mobile=mobile, email=email,
+                    line1=address, line2=address2, city=city, province=state, zip=zipcode)
+    db.session.add(new_cart)
+    db.session.commit()
+    lastrid = new_cart.cart_id
     grand_total = 0
     for key, val in session['cart'].items():
-        pid = key.split('-')[0]
+        pid = int(key.split('-')[0])
         sizeid = val['sizeid']
         qty = val['quantity']
-        price = db.execute("SELECT price FROM products WHERE id = :pid", pid = pid)[0]['price'] #Getting pro price from DB
+        product = Product.query.get(pid)
+        price = product.price
         grand_total += price * qty
-        sql = 'INSERT INTO cart_products (pid, sizeid, quantity, price, cart_id) VALUES (?, ?, ?, ?, ?)'
-        cursor.execute(sql, (pid, sizeid, qty, price, lastrid))
-
-    sql = "INSERT INTO orders (userid, cart_id, grand_total) VALUES (?, ?, ?)"
-    cursor.execute(sql, (userid, lastrid, grand_total))
-    orderid = cursor.lastrowid
-    sql = "UPDATE products SET stock = stock - :qty WHERE id = :pid;"
-    cursor.execute(sql, (qty, pid))
-
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-    return orderid
+        new_cart_product = CartProduct(pid=pid, sizeid=sizeid, quantity=qty, price=price, cart_id=lastrid)
+        db.session.add(new_cart_product)
+        product.stock -= qty
+    new_order = Order(userid=userid, cart_id=lastrid, grand_total=grand_total)
+    db.session.add(new_order)
+    db.session.commit()
+    session.pop('cart', None)
+    return new_order.order_id
 
 def makeProduct(pn, pp, ps, pclr, pc, fimg, bimg):
-    import sqlite3
-    connection = sqlite3.connect('database.db')
-    cursor = connection.cursor()
-    sql = "INSERT INTO products (name, cateid, stock, price, color, fimg, bimg) VALUES (?, ?, ?, ?, ?, ?, ?)"
-    cursor.execute(sql, (pn, pc, ps, pp, pclr, fimg, bimg))
-    pid = cursor.lastrowid
+    new_product = Product(name=pn, cateid=int(pc), stock=int(ps), price=float(pp), color=int(pclr), fimg=fimg, bimg=bimg)
+    db.session.add(new_product)
+    db.session.commit()
+    pid = new_product.id
     for value in session['file']:
-        sql = "INSERT INTO productimg (id, url) VALUES (?, ?)"
-        cursor.execute(sql, (pid, value))
-
-    connection.commit()
-    cursor.close()
-    connection.close()
-
+        new_img = ProductImg(id=pid, url=value)
+        db.session.add(new_img)
+    db.session.commit()
+    session.pop('file', None)
     return 0
 
 def deleteProduct(proid):
-    db.execute('DELETE FROM products WHERE id = :proid', proid=proid)
+    Product.query.filter_by(id=proid).delete()
+    ProductImg.query.filter_by(id=proid).delete()
+    db.session.commit()
     return 0
-    
-
-    

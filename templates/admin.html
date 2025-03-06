@@ -26,7 +26,6 @@
         <button type="submit" class="button" style="margin-right: 60px;" id="upbut">Upload Image(s)</button>  
         </div>
       </div>
-      
     </form> 
   <hr>
       <div id="imgsec" style="text-align: left;">
@@ -58,7 +57,7 @@
                 <label for="pcolors">Color:</label>
                 <select id="pcolors" name="pcolor">
                 {% for color in colors %}
-                <option value="{{ color['id'] }}">{{ color['color'] }}</option>
+                <option value="{{ color.id }}">{{ color.color }}</option>
                 {% endfor %}
                 </select>
               </div>
@@ -66,11 +65,10 @@
                 <label for="cates">Category:</label>
                 <select id="cates" name="pcate">
                 {% for cate in categories %}
-                <option value="{{ cate['id'] }}">{{ cate['catname'] }}</option>
+                <option value="{{ cate.id }}">{{ cate.catname }}</option>
                 {% endfor %}
                 </select>
               </div>
-              
         </div>
           <input type="hidden" name="fimg" id="fimg" value=""/>
           <input type="hidden" name="bimg" id="bimg" value=""/>
