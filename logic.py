@@ -1,12 +1,12 @@
 from collections import defaultdict
 from flask import session
-from queries import priceq
+import queries
 
 def pricerange():
     initprice = 0
     pricerange = 0
     pricedict = defaultdict(list)
-    for i in priceq():
+    for i in queries.priceq():
         price = int(i.price)
         if pricerange < price:
             initprice = price

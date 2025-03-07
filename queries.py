@@ -1,10 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
 from logic import multiIdQ
 from flask import session
 from database import db
-
-
-db = SQLAlchemy(app)
 
 class Product(db.Model):
     __tablename__ = 'products'

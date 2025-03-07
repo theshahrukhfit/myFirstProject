@@ -3,16 +3,21 @@ import re
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 from werkzeug.utils import secure_filename
-from werkzeug.exceptions import HTTPException, InternalServerError
+from werkzeug.exceptions import HTTPException, InternalServerError, default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 from collections import defaultdict
 from helpers import apology, login_required, usd, success
 from database import db
+import json
 
 app = Flask(__name__)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+# Configure SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Configure upload folder
 app.config['UPLOAD_PATH'] = 'static/images/dresses'
@@ -22,15 +27,22 @@ app.config['UPLOAD_EXTENSIONS'] = ['.jpg', '.png', '.gif']
 app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), 'sessions')
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['SECRET_KEY'] = '124'
 Session(app)
+db.init_app(app)
+app.session_cookie_name = app.config.get("SESSION_COOKIE_NAME", "session")
 
-# Configure SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)  # Initialize db with the app instance
+
 from queries import *
 from logic import *
 
+
+# with app.app_context():
+#     db.create_all()
+#     if not Product.query.first():  # Only seed if empty
+#         new_product = Product(name="Test Dress", price=100.0, fimg="img1.jpg", bimg="img2.jpg")
+#         db.session.add(new_product)
+#         db.session.commit()
 
 # Custom filter for formatting currency
 def pkr(value):
@@ -46,6 +58,7 @@ def context_processor():
 @app.route("/", methods=["GET", "POST"])
 def index():
     dressimgs = displayAllProducts()
+    print(displayAllProducts())
     colors = colorOption()
     checkrange = pricerange()
     return render_template("index.html", dressimgs=dressimgs, colors=colors, priceap=checkrange)
