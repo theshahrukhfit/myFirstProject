@@ -92,7 +92,8 @@ def priceq():
 def productCategoryWise(cid):
     return db.session.query(Product.id, Product.fimg, Product.bimg, Product.price, Product.name, Pcategory.catname, Pcategory.id.label('catid'))\
         .join(Pcategory, Product.cateid == Pcategory.id)\
-        .order_by(db.case([(Pcategory.id == cid, 1)], else_=2), Pcategory.id).all()
+        .order_by(db.case((Pcategory.id == cid, 1), else_=2), Pcategory.id).all()
+
 
 def allCategories():
     return Pcategory.query.all()
@@ -113,18 +114,44 @@ def registerUser(username, password, email):
 def checkLogin(username):
     return User.query.filter_by(username=username).all()
 
+import json
+
 def searchAttributes(immuDict):
-    query = db.session.query(Product.id, Product.name, Pcategory.catname, Product.stock, Product.price, Color.color, Product.fimg)\
-        .join(Color, Color.id == Product.color)\
-        .join(Pcategory, Pcategory.id == Product.cateid)
+    query = db.session.query(
+        Product.id, Product.name, Pcategory.catname, 
+        Product.stock, Product.price, Color.color, Product.fimg
+    ).join(Color, Color.id == Product.color
+    ).join(Pcategory, Pcategory.id == Product.cateid)
+    
     for key, val in immuDict.items():
-        if key == 'p.id':
-            query = query.filter(Product.id.in_([int(v) for v in val]))
-        elif key == 'p.cateid':
-            query = query.filter(Product.cateid.in_([int(v) for v in val]))
-        elif key == 'p.color':
-            query = query.filter(Product.color.in_([int(v) for v in val]))
+        if key in ['p.id', 'p.cateid', 'p.color']:
+            # Parse the string as JSON if it starts with '['
+            if isinstance(val, str) and val.strip().startswith('['):
+                try:
+                    val_list = json.loads(val)
+                except Exception as e:
+                    # If JSON parsing fails, fallback to an empty list or handle error
+                    val_list = []
+                    print(f"Error parsing {key}: {e}")
+            else:
+                val_list = [val]
+            
+            # Now convert each value in the list to int
+            try:
+                int_list = [int(v) for v in val_list]
+            except ValueError as e:
+                print(f"Error converting values for {key}: {e}")
+                int_list = []
+            
+            # Apply the filter only if we have valid integers
+            if key == 'p.id':
+                query = query.filter(Product.id.in_(int_list))
+            elif key == 'p.cateid':
+                query = query.filter(Product.cateid.in_(int_list))
+            elif key == 'p.color':
+                query = query.filter(Product.color.in_(int_list))
     return query.all()
+
 
 def check_out(userid, firstName, midName, lastName, email, mobile, address, address2, city, state, zipcode):
     new_cart = Cart(id=userid, firstName=firstName, middleName=midName, lastName=lastName, mobile=mobile, email=email,
