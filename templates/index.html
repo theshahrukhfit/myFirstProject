@@ -45,8 +45,8 @@
         <h5>Color:</h5>
         {% for color in colors %}
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="p.color" value="{{ color.id }}" style="width: 20px;" >
-            <label class="form-check-label">{{ color.color }}</label>
+            <input class="form-check-input" type="checkbox" name="p.color" value="{{ color['id'] }}" style="width: 20px;" >
+            <label class="form-check-label">{{ color['color'] }}</label>
         </div>
         {% endfor %}
     </div>
@@ -55,8 +55,8 @@
         <h5>Category:</h5>
         {% for cate in dcatelist %}
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" name="p.cateid" value="{{ cate.id }}" style="width: 20px;" >
-            <label class="form-check-label">{{ cate.catname }}</label>
+            <input class="form-check-input" type="checkbox" name="p.cateid" value="{{ cate['id'] }}" style="width: 20px;" >
+            <label class="form-check-label">{{ cate['catname'] }}</label>
         </div>
         {% endfor %}
     </div>
@@ -82,19 +82,19 @@
     {% for img in dressimgs %}
     <div>
     <div class="econt reveal">
-        <a href="{{ url_for('itemdtls', proid=img.id) }}">
-        <div hidden class="productID">{{ img.id }}</div>
-        <img id="tesT" src="{{ img.fimg }}" alt="img" height="" width=""/>
-        <img class="hidden" src="{{ img.bimg }}" alt="img" />
+        <a href="{{ url_for('itemdtls', proid=img['id']) }}">
+        <div hidden class="productID">{{ img['id'] }}</div>
+        <img id="tesT" src="{{ img['fimg'] }}" alt="img" height="" width=""/>
+        <img class="hidden" src="{{ img['bimg'] }}" alt="img" />
         <div class="shoP">
-            <h4 style="font-size: 20px;">{{ img.name }}</h4>
+            <h4 style="font-size: 20px;">{{ img['name'] }}</h4>
             <h4 class="hoveradd2cart" style="font-size: 20px;">+ Add to cart?</h4>
             <br>
-            <div style="font-size: 20px;">Shop Now For Rs. {{ img.price | pkr }}</div>
+            <div style="font-size: 20px;">Shop Now For Rs. {{ img['price'] | pkr }}</div>
         </div>
         </a>
     </div>
-    <h4 style="float: left; margin-left: 30px;">Price: Rs. {{ img.price | pkr }}</h4>
+    <h4 style="float: left; margin-left: 30px;">Price: Rs. {{ img['price'] | pkr }}</h4>
 </div>
     {% endfor %}
 </div>

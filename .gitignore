@@ -62,7 +62,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
-instance/
+
 .webassets-cache
 
 # Scrapy stuff:
@@ -138,3 +138,4 @@ dmypy.json
 
 # Local History for Visual Studio Code
 .history/
+dockerfile
